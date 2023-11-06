@@ -4,13 +4,17 @@
 #include <math.h>
 
 #define W 120
-#define H 41
+#define H 40
 
-#define POINT 0
-#define LINE 1
-#define TRIANGLES 2
+#define POINT 1
+#define LINE 2
+#define TRIANGLES 3
 
-#define SET_PIXEL(scr, x, y, color) scr->color_buffer[W * y + x] = color;
+#define PRIMITIVE_ARR_SIZE primitive_count * primitive_type * 3
+
+#define Z_BUFFER_CLEAR_VALUE 1000.0f
+
+#define SET_PIXEL(scr, x, y, color) if( (x < W && y < H) && (x >= 0 && y >= 0)) scr->color_buffer[W * y + x] = color;
 
 static uint8_t colors[5] = {' ', 176, 177, 178, 219};
 
@@ -18,17 +22,24 @@ uint8_t color_buffer[W*H];
 
 struct screen{
     uint8_t color_buffer[W*H];
-    uint64_t z_buffer[W*H];
+    float z_buffer[W*H];
+};
+
+struct screen_coord {
+    int x;
+    int y;
 };
 
 typedef struct screen screen;
+typedef struct screen_coord screen_coord;
+typedef short int int16_f;
 
 void screen_init(screen *scr){
     for (int buf = 0; buf < (W*H)/8; ++buf)
         ((uint64_t*)scr->color_buffer)[buf] = 0;
 
     for (int buf = 0; buf < (W*H); ++buf)
-        scr->z_buffer[buf] = 0;
+        scr->z_buffer[buf] = Z_BUFFER_CLEAR_VALUE;
 }
 
 void fill_color_buf(screen *scr, uint8_t color) {
@@ -92,8 +103,25 @@ void draw_line(screen *scr, int x1, int y1, int x2, int y2, uint8_t color){
 
 }
 
+screen_coord translate_coord(float x, float y){
+    screen_coord scr_crd;
+
+    scr_crd.x = (int)((x + 1.0f) * 0.5f * (W - 1));
+    scr_crd.y = (int)((y + 1.0f) * 0.5f * (H - 1));
+
+    return scr_crd;
+}
+
 void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color){
-    uint8_t *arr = ((uint8_t*)array);
+    float *arr_float = ((float*)array);
+    int16_f *arr = (int16_f*)malloc(PRIMITIVE_ARR_SIZE * 2);
+
+    for (int buf = 0; buf < PRIMITIVE_ARR_SIZE; buf += 3) {
+        screen_coord coord = translate_coord(arr_float[buf], arr_float[buf + 1]);
+        arr[buf] = coord.x;
+        arr[buf + 1] = coord.y;
+    }
+
     int _offset = 0;
 
     switch (primitive_type) {
@@ -128,6 +156,8 @@ void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primit
             break;
         }
     }
+
+    free(arr);
 }
 
 int main() {
@@ -136,20 +166,17 @@ int main() {
     screen scr;
     screen_init(&scr);
 
-    uint8_t points[18] =    {10,2, 0,
-                            109, 2, 0,
-                            109, 37, 0,
+    float points[18] =    {-1.9f,0.9f, 0.0f,
+                            0.0f, -1.9f, 0.0f,
+                            1.9f, 0.9f, 0.0f,
 
-                             10,2, 0,
-                             10, 37, 0,
-                             109, 37, 0,
-
+                           -0.9f*0.8f,0.9f*0.8f, 0.0f,
+                           0.0f*0.8f, -0.9f*0.8f, 0.0f,
+                           0.9f*0.8f, 0.9f*0.8f, 0.0f,
     };
 
     fill_color_buf(&scr, colors[1]);
-
     draw_primitive_arr(&scr, TRIANGLES, &points, 2, colors[4]);
-
     print_buf(&scr);
 
     system("pause");
