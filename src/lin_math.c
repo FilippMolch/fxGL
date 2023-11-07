@@ -18,6 +18,7 @@ mat4 mat4_init(void){
         k++;
     }
 
+    mat.init = MAT_INIT;
     return mat;
 }
 
@@ -28,6 +29,7 @@ vec3 vec3_init(void){
     vec.y = &vec.vec[1];
     vec.z = &vec.vec[2];
 
+    vec.init = VEC_INIT;
     return vec;
 }
 
@@ -39,5 +41,7 @@ vec4 vec4_init(void){
     vec.z = &vec.vec[2];
     vec.w = &vec.vec[3];
 
+    vec.init = VEC_INIT;
     return vec;
 }
+

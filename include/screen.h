@@ -10,17 +10,25 @@
 #include <stdint.h>
 #include <math.h>
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 #define W 120
 #define H 40
 
 #define Z_BUFFER_CLEAR_VALUE 1000.0f
 
+#define SCREEN_INIT 224
+
 static uint8_t colors[5] = {' ', 176, 177, 178, 219};
 
 struct screen{
     uint8_t color_buffer[W*H];
     float z_buffer[W*H];
+    HANDLE console;
+
+    uint8_t init;
 };
 
 struct screen_coord {

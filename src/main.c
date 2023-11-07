@@ -8,8 +8,6 @@
 #include <screen.h>
 
 int main() {
-    system("mode con cols=121 lines=42");
-
     screen scr;
     screen_init(&scr);
 
@@ -22,11 +20,12 @@ int main() {
                            0.9f, 0.6f, 0.0f,
     };
 
-    fill_color_buf(&scr, colors[1]);
-    draw_primitive_arr(&scr, TRIANGLES, &points, 2, colors[4]);
-    print_buf(&scr);
+    do {
+        fill_color_buf(&scr, colors[1]);
+        draw_primitive_arr(&scr, TRIANGLES, &points, 2, colors[4]);
+        print_buf(&scr);
+    } while (1);
 
-    mat4 mat = mat4_init();
 
     system("pause");
     return 0;
