@@ -28,33 +28,61 @@ mat4 mat4_mult(mat4 mat_1, mat4 mat_2){
     mat4 final;
     final = mat4_init(0);
 
-    vec4* col_mult[4*4];
+    if(mat_1.init + mat_2.init == MAT_INIT*2) {
 
-    for (int i = 0; i < 4*4; i++)
-        col_mult[i] = vec4_init();
+        vec4 *col_mult[4 * 4];
 
-    int mat_2_row_offset = 0;
+        for (int i = 0; i < 4 * 4; i++)
+            col_mult[i] = vec4_init();
 
-    float row_mat_element[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        int mat_2_row_offset = 0;
 
-    for (int i = 0; i < 4*4; i += 4) {
-        for (int k = 0; k < 4; k++) {
-            *col_mult[0 + i + k]->x = mat_1.mat[0][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-            *col_mult[0 + i + k]->y = mat_1.mat[1][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-            *col_mult[0 + i + k]->z = mat_1.mat[2][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-            *col_mult[0 + i + k]->w = mat_1.mat[3][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
+        float row_mat_element[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-            for (int i = 0; i < 4; i++)
-                row_mat_element[i] += col_mult[0 + i + k]->vec[i];
+        for (int i = 0; i < 4 * 4; i += 4) {
+            for (int k = 0; k < 4; k++) {
+                *col_mult[0 + i + k]->x = mat_1.mat[0][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
+                *col_mult[0 + i + k]->y = mat_1.mat[1][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
+                *col_mult[0 + i + k]->z = mat_1.mat[2][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
+                *col_mult[0 + i + k]->w = mat_1.mat[3][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
+
+                for (int i = 0; i < 4; i++)
+                    row_mat_element[i] += col_mult[0 + i + k]->vec[i];
+            }
+
+            for (int k = 0; k < 4; k++)
+                final.mat[k][i / 4] = row_mat_element[k];
+
+            for (int j = 0; j < 4; ++j)
+                row_mat_element[j] = 0.0f;
+
+            mat_2_row_offset++;
         }
+    }
+    else{
+        printf("MAT NOT INIT \n");
+    }
 
-        for (int k = 0; k < 4; k++)
-           final.mat[k][i/4] = row_mat_element[k];
+    return final;
+}
 
-        for (int j = 0; j < 4; ++j)
-            row_mat_element[j] = 0.0f;
+vec4* mat4_vec4_mult(mat4 mat, vec4 vec){
+    static vec4 *final;
+    final = vec4_init();
 
-        mat_2_row_offset++;
+    if(mat.init + vec.init == MAT_INIT + VEC_INIT) {
+        float vec_element = 0.0f;
+
+        for (int x = 0; x < 4; ++x) {
+            for (int y = 0; y < 4; ++y)
+                vec_element += mat.mat[x][y] * vec.vec[y];
+
+            final->vec[x] = vec_element;
+            vec_element = 0.0f;
+        }
+    }
+    else{
+        printf("VEC or MAT NOT INIT \n");
     }
 
     return final;
@@ -82,4 +110,3 @@ vec4* vec4_init(void){
     vec.init = VEC_INIT;
     return &vec;
 }
-

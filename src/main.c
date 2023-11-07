@@ -26,16 +26,13 @@ int main() {
         print_buf(&scr);
     }
 
-    mat4 mat_1 = {{
-                    {2, 5, 32, 3},
-                    {4, 5, 2, 9},
-                    {4, 3, 0, 9},
-                    {5, 6, 7, 8}
-                    },
-                    MAT_INIT
+    vec4 vec = {
+                    {2, 4, 44, 5},
+                    0,0,0,0,
+                    VEC_INIT
     };
 
-    mat4 mat_2 = {
+    mat4 mat = {
             {
                     {9, 8, 7, 85},
                     {9, 7, 7, 5},
@@ -45,14 +42,10 @@ int main() {
                     MAT_INIT
     };
 
-    mat4 final = mat4_mult(mat_1, mat_2);
+    vec4* final = mat4_vec4_mult(mat, vec);
 
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            printf("%f ", final.mat[i][j]);
-        }
-
-        printf("\n");
+    for (int j = 0; j < 4; ++j) {
+            printf("%f \n", final->vec[j]);
     }
 
     system("pause");
