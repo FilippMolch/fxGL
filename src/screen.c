@@ -53,7 +53,6 @@ void print_buf(screen *scr){
 #ifdef WIN32
         COORD crd = {0, 0};
         SetConsoleCursorPosition(scr->console, crd);
-
         WriteConsoleA(scr->console, scr->color_buffer, W*H, 0, 0);
 #endif
     }

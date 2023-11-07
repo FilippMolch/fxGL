@@ -14,8 +14,8 @@
 #include <Windows.h>
 #endif
 
-#define W 120
-#define H 40
+#define W 180
+#define H 52
 
 #define Z_BUFFER_CLEAR_VALUE 1000.0f
 

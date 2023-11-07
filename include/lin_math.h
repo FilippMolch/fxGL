@@ -37,9 +37,10 @@ typedef struct mat4 mat4;
 typedef struct vec3 vec3;
 typedef struct vec4 vec4;
 
-mat4 mat4_init(void);
+mat4 mat4_init(uint8_t mode);
+mat4 mat4_mult(mat4 mat_1, mat4 mat_2);
 
-vec3 vec3_init(void);
-vec4 vec4_init(void);
+vec3* vec3_init(void);
+vec4* vec4_init(void);
 
 #endif //SOFT_3D_LIN_MATH_H
