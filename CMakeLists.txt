@@ -3,4 +3,10 @@ project(soft_3d C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(soft_3d main.c)
+add_executable(soft_3d
+        src/main.c
+        src/lin_math.c
+        src/render.c
+        src/screen.c)
+
+target_include_directories(soft_3d PUBLIC "include/")
