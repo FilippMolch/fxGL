@@ -39,6 +39,8 @@ typedef struct vec4 vec4;
 
 mat4 mat4_init(uint8_t mode);
 mat4 mat4_mult(mat4 mat_1, mat4 mat_2);
+void mat4_scale(mat4 *mat, vec3 vec);
+void mat4_translate(mat4 *mat, vec3 vec);
 
 vec4* mat4_vec4_mult(mat4 mat, vec4 vec);
 vec3* vec3_init(void);

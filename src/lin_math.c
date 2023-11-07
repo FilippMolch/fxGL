@@ -88,6 +88,35 @@ vec4* mat4_vec4_mult(mat4 mat, vec4 vec){
     return final;
 }
 
+void mat4_scale(mat4 *mat, vec3 vec){
+
+    if (mat->init + vec.init == MAT_INIT + VEC_INIT){
+
+        mat->mat[0][0] = vec.vec[0];
+        mat->mat[1][1] = vec.vec[1];
+        mat->mat[2][2] = vec.vec[2];
+
+    }
+    else{
+        printf("MAT OR VEC NOT INIT \n");
+    }
+
+}
+
+void mat4_translate(mat4 *mat, vec3 vec){
+
+    if (mat->init + vec.init == MAT_INIT + VEC_INIT) {
+
+        mat->mat[0][3] = vec.vec[0];
+        mat->mat[1][3] = vec.vec[1];
+        mat->mat[2][3] = vec.vec[2];
+
+    }
+    else{
+        printf("MAT OR VEC NOT INIT \n");
+    }
+}
+
 vec3* vec3_init(void){
     static vec3 vec = {0.0f, 0.0f, 0.0f};
 

@@ -9,7 +9,7 @@
 
 int main() {
     screen scr;
-    //screen_init(&scr);
+    screen_init(&scr);
 
     float poly[18] =    {-0.9f,-0.9f, 0.0f,
                             0.9f, -0.9f, 0.0f,
@@ -20,33 +20,23 @@ int main() {
                            -0.9f, 0.9f, 0.0f,
     };
 
-    while (0){
+    mat4 mat = mat4_init(1);
+    vec3 *scale = vec3_init();
+
+    *scale->x = 0.1;
+    *scale->y = 0.5;
+    *scale->z = 0.1;
+
+    mat4_scale(&mat, *scale);
+
+    set_render_mat_trig(0);
+
+    while (1){
         fill_color_buf(&scr, colors[1]);
-        draw_primitive_arr(&scr, TRIANGLES, &poly, 2, colors[4]);
+        draw_primitive_arr(&scr, TRIANGLES, &poly, 2, colors[4], mat);
         print_buf(&scr);
     }
 
-    vec4 vec = {
-                    {2, 4, 44, 5},
-                    0,0,0,0,
-                    VEC_INIT
-    };
-
-    mat4 mat = {
-            {
-                    {9, 8, 7, 85},
-                    {9, 7, 7, 5},
-                    {8, 5, 3, 4},
-                    {7, 6, 2, 3}
-                    },
-                    MAT_INIT
-    };
-
-    vec4* final = mat4_vec4_mult(mat, vec);
-
-    for (int j = 0; j < 4; ++j) {
-            printf("%f \n", final->vec[j]);
-    }
 
     system("pause");
     return 0;

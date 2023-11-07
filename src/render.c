@@ -39,8 +39,35 @@ screen_coord translate_coord(float x, float y){
     return scr_crd;
 }
 
-void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color){
+void set_render_mat_trig(uint8_t trig){
+    render_mat_trig = trig;
+}
+
+void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color, mat4 matrix){
     float *arr_float = ((float*)array);
+
+    if(render_mat_trig) {
+
+        vec4 *mult = vec4_init();
+
+        for (int i = 0; i < PRIMITIVE_ARR_SIZE; i += 3) {
+
+            *mult->x = arr_float[i];
+            *mult->y = arr_float[i + 1];
+            *mult->z = arr_float[i + 2];
+
+            vec4 *new_coord = mat4_vec4_mult(matrix, *mult);
+
+            arr_float[i] = *new_coord->x;
+            arr_float[i + 1] = *new_coord->y;
+            arr_float[i + 2] = *new_coord->z;
+
+
+        }
+
+        render_mat_trig = 0;
+    }
+
     int16_f *arr = (int16_f*)malloc(PRIMITIVE_ARR_SIZE * 2);
 
     for (int buf = 0; buf < PRIMITIVE_ARR_SIZE; buf += 3) {
