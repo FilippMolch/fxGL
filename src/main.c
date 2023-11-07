@@ -26,6 +26,7 @@ int main() {
     draw_primitive_arr(&scr, TRIANGLES, &points, 2, colors[4]);
     print_buf(&scr);
 
+    mat4 mat = mat4_init();
 
     system("pause");
     return 0;

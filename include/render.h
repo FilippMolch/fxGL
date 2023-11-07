@@ -23,8 +23,9 @@
 
 typedef short int int16_f;
 
-void draw_line(screen *scr, int x1, int y1, int x2, int y2, uint8_t color);
 screen_coord translate_coord(float x, float y);
+
+void draw_line(screen *scr, int x1, int y1, int x2, int y2, uint8_t color);
 void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color);
 
 #endif //SOFT_3D_RENDER_H
