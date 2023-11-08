@@ -97,11 +97,6 @@ void mat4_translate(mat4 *mat, vec3 vec){
     }
 }
 
-#define INVERSE_SQRT(x) 1 / SQRT(x)
-#define DOT(x, y) x * y
-
-#define SCALAR_NORMALIZE(x) x * INVERSE_SQRT(DOT(x, x))
-
 void mat4_rotate(mat4 *mat, float angle, vec3 vec){
 
     float radians = ANGLE_TO_RADIANS(angle);
@@ -110,7 +105,11 @@ void mat4_rotate(mat4 *mat, float angle, vec3 vec){
     float cos_rad = COSF(radians);
     float cos_rad_min = 1.0f - COSF(radians);
 
+    float scalar = VEC4_SCALAR(vec);
+    VEC4_NORMALIZE(vec, scalar);
+
     float r_x = vec.vec[0], r_y = vec.vec[1], r_z = vec.vec[2];
+
 
     mat->mat[0][0] = cos_rad + POW(r_x, 2) * cos_rad_min;
     mat->mat[0][1] = r_x * r_y * cos_rad_min - r_z * sin_rad;

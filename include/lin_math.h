@@ -32,11 +32,6 @@
                                      vec3.vec[1] = vec3.vec[1] / SCALAR; \
                                      vec3.vec[2] = vec3.vec[2] / SCALAR;
 
-#define MAT_FILL(mat, final)    for (int x = 0; x < 4; ++x) {\
-                                    for (int y = 0; y < 4; ++y) {\
-                                        mat->mat[x][y] = final.mat[x][y];\
-                                    }\
-                                }\
 
 struct mat4 {
     float mat[4][4];
