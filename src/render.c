@@ -4,8 +4,8 @@
 #include <render.h>
 
 void draw_line(screen *scr, int x1, int y1, int x2, int y2, uint8_t color){
-    const int delta_x = F_ABS(x2 - x1);
-    const int delta_y = F_ABS(y2 - y1);
+    const int delta_x = FABS(x2 - x1);
+    const int delta_y = FABS(y2 - y1);
     const int sign_x = x1 < x2? 1 : -1;
     const int sign_y = y1 < y2? 1 : -1;
 
@@ -39,34 +39,34 @@ screen_coord translate_coord(float x, float y){
     return scr_crd;
 }
 
-void set_render_mat_trig(uint8_t trig){
-    render_mat_trig = trig;
-}
-
-void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color, mat4 matrix){
+void apply_matrix_to_arr(mat4 matrix, void* array, int count, uint8_t normalize){
     float *arr_float = ((float*)array);
 
-    if(render_mat_trig) {
+    vec4 mult = vec4_init();
 
-        vec4 *mult = vec4_init();
+    for (int i = 0; i < count; i += 3) {
 
-        for (int i = 0; i < PRIMITIVE_ARR_SIZE; i += 3) {
+        mult.vec[0] = arr_float[i];
+        mult.vec[1] = arr_float[i + 1];
+        mult.vec[2] = arr_float[i + 2];
 
-            *mult->x = arr_float[i];
-            *mult->y = arr_float[i + 1];
-            *mult->z = arr_float[i + 2];
-
-            vec4 *new_coord = mat4_vec4_mult(matrix, *mult);
-
-            arr_float[i] = *new_coord->x;
-            arr_float[i + 1] = *new_coord->y;
-            arr_float[i + 2] = *new_coord->z;
-
-
+        if (normalize) {
+            float mult_scalar = VEC4_SCALAR(mult);
+            VEC4_NORMALIZE(mult, mult_scalar);
         }
 
-        render_mat_trig = 0;
+        vec4 new_coord = mat4_vec4_mult(matrix, mult);
+
+        arr_float[i    ] = new_coord.vec[0];
+        arr_float[i + 1] = new_coord.vec[1];
+        arr_float[i + 2] = new_coord.vec[2];
+
     }
+
+}
+
+void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color){
+    float *arr_float = ((float*)array);
 
     int16_f *arr = (int16_f*)malloc(PRIMITIVE_ARR_SIZE * 2);
 
@@ -107,6 +107,10 @@ void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primit
                 _offset += 6;
             }
 
+            break;
+        }
+
+        default:{
             break;
         }
     }

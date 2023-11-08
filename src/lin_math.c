@@ -30,34 +30,15 @@ mat4 mat4_mult(mat4 mat_1, mat4 mat_2){
 
     if(mat_1.init + mat_2.init == MAT_INIT*2) {
 
-        vec4 *col_mult[4 * 4];
-
-        for (int i = 0; i < 4 * 4; i++)
-            col_mult[i] = vec4_init();
-
-        int mat_2_row_offset = 0;
-
-        float row_mat_element[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-
-        for (int i = 0; i < 4 * 4; i += 4) {
-            for (int k = 0; k < 4; k++) {
-                *col_mult[0 + i + k]->x = mat_1.mat[0][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-                *col_mult[0 + i + k]->y = mat_1.mat[1][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-                *col_mult[0 + i + k]->z = mat_1.mat[2][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-                *col_mult[0 + i + k]->w = mat_1.mat[3][k] * mat_2.mat[k - mat_2_row_offset][i + mat_2_row_offset];
-
-                for (int i = 0; i < 4; i++)
-                    row_mat_element[i] += col_mult[0 + i + k]->vec[i];
+        for (int x = 0; x < 4; ++x) {
+            for (int y = 0; y < 4; ++y) {
+                final.mat[x][y] =   mat_1.mat[x][0] * mat_2.mat[0][y] +
+                                    mat_1.mat[x][1] * mat_2.mat[1][y] +
+                                    mat_1.mat[x][2] * mat_2.mat[2][y] +
+                                    mat_1.mat[x][3] * mat_2.mat[3][y];
             }
-
-            for (int k = 0; k < 4; k++)
-                final.mat[k][i / 4] = row_mat_element[k];
-
-            for (int j = 0; j < 4; ++j)
-                row_mat_element[j] = 0.0f;
-
-            mat_2_row_offset++;
         }
+
     }
     else{
         printf("MAT NOT INIT \n");
@@ -66,9 +47,8 @@ mat4 mat4_mult(mat4 mat_1, mat4 mat_2){
     return final;
 }
 
-vec4* mat4_vec4_mult(mat4 mat, vec4 vec){
-    static vec4 *final;
-    final = vec4_init();
+vec4 mat4_vec4_mult(mat4 mat, vec4 vec){
+    vec4 final = vec4_init();
 
     if(mat.init + vec.init == MAT_INIT + VEC_INIT) {
         float vec_element = 0.0f;
@@ -77,7 +57,7 @@ vec4* mat4_vec4_mult(mat4 mat, vec4 vec){
             for (int y = 0; y < 4; ++y)
                 vec_element += mat.mat[x][y] * vec.vec[y];
 
-            final->vec[x] = vec_element;
+            final.vec[x] = vec_element;
             vec_element = 0.0f;
         }
     }
@@ -117,25 +97,42 @@ void mat4_translate(mat4 *mat, vec3 vec){
     }
 }
 
-vec3* vec3_init(void){
-    static vec3 vec = {0.0f, 0.0f, 0.0f};
+#define INVERSE_SQRT(x) 1 / SQRT(x)
+#define DOT(x, y) x * y
 
-    vec.x = &vec.vec[0];
-    vec.y = &vec.vec[1];
-    vec.z = &vec.vec[2];
+#define SCALAR_NORMALIZE(x) x * INVERSE_SQRT(DOT(x, x))
 
-    vec.init = VEC_INIT;
-    return &vec;
+void mat4_rotate(mat4 *mat, float angle, vec3 vec){
+
+    float radians = ANGLE_TO_RADIANS(angle);
+
+    float sin_rad = SINF(radians);
+    float cos_rad = COSF(radians);
+    float cos_rad_min = 1.0f - COSF(radians);
+
+    float r_x = vec.vec[0], r_y = vec.vec[1], r_z = vec.vec[2];
+
+    mat->mat[0][0] = cos_rad + POW(r_x, 2) * cos_rad_min;
+    mat->mat[0][1] = r_x * r_y * cos_rad_min - r_z * sin_rad;
+    mat->mat[0][2] = r_x * r_z * cos_rad_min + r_y * sin_rad;
+
+    mat->mat[1][0] = r_y * r_x * cos_rad_min + r_z * sin_rad;
+    mat->mat[1][1] = cos_rad + POW(r_y, 2) * cos_rad_min;
+    mat->mat[1][2] = r_y * r_z * cos_rad_min - r_x * sin_rad;
+
+    mat->mat[2][0] = r_z * r_x * cos_rad_min - r_y * sin_rad;
+    mat->mat[2][1] = r_z * r_y * cos_rad_min + r_x * sin_rad;
+    mat->mat[2][2] = cos_rad + POW(r_z, 2) * cos_rad_min;
 }
 
-vec4* vec4_init(void){
-    static vec4 vec = {0.0f, 0.0f, 0.0f, 1.0f};
+mat4 mat4_perspective(float fov, float aspect, float near_plane, float far_plane){
 
-    vec.x = &vec.vec[0];
-    vec.y = &vec.vec[1];
-    vec.z = &vec.vec[2];
-    vec.w = &vec.vec[3];
+}
 
-    vec.init = VEC_INIT;
-    return &vec;
+vec3 vec3_init(void){
+    return (vec3){0.0f, 0.0f, 0.0f, VEC_INIT};
+}
+
+vec4 vec4_init(void){
+    return (vec4){0.0f, 0.0f, 0.0f, 1.0f, VEC_INIT};
 }

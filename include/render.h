@@ -21,16 +21,13 @@
 
 #define SET_PIXEL(scr, x, y, color) if( (x < W && y < H) && (x >= 0 && y >= 0)) scr->color_buffer[W * y + x] = color;
 
-#define F_ABS(a) fabs(a);
-
 typedef short int int16_f;
-
-static uint8_t render_mat_trig;
 
 screen_coord translate_coord(float x, float y);
 
+void apply_matrix_to_arr(mat4 matrix, void* array, int count, uint8_t normalize);
+
 void draw_line(screen *scr, int x1, int y1, int x2, int y2, uint8_t color);
-void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color, mat4 matrix);
-void set_render_mat_trig(uint8_t trig);
+void draw_primitive_arr(screen *scr, int primitive_type, void* array, int primitive_count, uint8_t color);
 
 #endif //SOFT_3D_RENDER_H

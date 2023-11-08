@@ -21,22 +21,35 @@ int main() {
     };
 
     mat4 mat = mat4_init(1);
-    vec3 *scale = vec3_init();
+    vec3 scale = vec3_init();
 
-    *scale->x = 0.1;
-    *scale->y = 0.5;
-    *scale->z = 0.1;
+    scale.vec[0] = 0.4;
+    scale.vec[1] = 0.4;
+    scale.vec[2] = 1.0;
 
-    mat4_scale(&mat, *scale);
+    mat4_scale(&mat, scale);
 
-    set_render_mat_trig(0);
+    mat4 rotate2 = mat4_init(1);
+    vec3 rotate_axis2 = vec3_init();
+
+    rotate_axis2.vec[0] = 0.0f;
+    rotate_axis2.vec[1] = 1.0f;
+    rotate_axis2.vec[2] = 1.0f;
+
+    mat4_rotate(&rotate2, 1.0f, rotate_axis2);
+
+    apply_matrix_to_arr(mat, &poly, 18, 0);
 
     while (1){
-        fill_color_buf(&scr, colors[1]);
-        draw_primitive_arr(&scr, TRIANGLES, &poly, 2, colors[4], mat);
-        print_buf(&scr);
-    }
 
+        apply_matrix_to_arr(rotate2, &poly, 18, 0);
+        fill_color_buf(&scr, colors[0]);
+        draw_primitive_arr(&scr, TRIANGLES, &poly, 2, colors[4]);
+        print_buf(&scr);
+
+        Sleep(0);
+
+    }
 
     system("pause");
     return 0;
