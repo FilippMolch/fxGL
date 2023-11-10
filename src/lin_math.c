@@ -47,6 +47,26 @@ mat4 mat4_mult(mat4 mat_1, mat4 mat_2){
     return final;
 }
 
+mat4 mat4_mult_some(int count, ...){
+    mat4 final = mat4_init(1);
+
+    va_list factor;
+    va_start(factor, count);
+
+    mat4 *mat = calloc(count, sizeof(mat4));
+
+    for (int i = 0; (i < count); i++)
+        mat[i] = va_arg(factor, mat4);
+
+    for (int i = count - 1; i >= 0; i--)
+        final = mat4_mult(mat[i], final);
+
+    va_end(factor);
+    free(mat);
+
+    return final;
+}
+
 vec4 mat4_vec4_mult(mat4 mat, vec4 vec){
     vec4 final = vec4_init();
 
@@ -110,7 +130,6 @@ void mat4_rotate(mat4 *mat, float angle, vec3 vec){
 
     float r_x = vec.vec[0], r_y = vec.vec[1], r_z = vec.vec[2];
 
-
     mat->mat[0][0] = cos_rad + POW(r_x, 2) * cos_rad_min;
     mat->mat[0][1] = r_x * r_y * cos_rad_min - r_z * sin_rad;
     mat->mat[0][2] = r_x * r_z * cos_rad_min + r_y * sin_rad;
@@ -125,7 +144,69 @@ void mat4_rotate(mat4 *mat, float angle, vec3 vec){
 }
 
 mat4 mat4_perspective(float fov, float aspect, float near_plane, float far_plane){
+    mat4 final = mat4_init(0);
 
+    float tan_half_fov = TAN(ANGLE_TO_RADIANS(fov) / 2);
+
+    final.mat[0][0] = 1 / (aspect * tan_half_fov);
+    final.mat[1][1] = 1 / (tan_half_fov);
+    final.mat[2][2] = far_plane / (far_plane - near_plane);
+    final.mat[2][3] = 1;
+    final.mat[3][2] = -(far_plane * near_plane) / (far_plane - near_plane);
+
+    return final;
+}
+
+mat4 look_at(vec3 camera_pos, vec3 camera_target, vec3 camera_up){
+    mat4 camera = mat4_init(1);
+    mat4 pos = mat4_init(1);
+
+    float scalar = 0.0f;
+
+    vec3 z_axis = {VEC3_MINUS(camera_pos, camera_target, 0),
+                   VEC3_MINUS(camera_pos, camera_target, 1),
+                   VEC3_MINUS(camera_pos, camera_target, 2), VEC_INIT};
+    scalar = VEC4_SCALAR(z_axis);
+    VEC4_NORMALIZE(z_axis, scalar);
+
+    vec3 normalize_camera_up = camera_up;
+    scalar = VEC4_SCALAR(normalize_camera_up);
+    VEC4_NORMALIZE(normalize_camera_up, scalar);
+
+    vec3 x_axis = vec3_cross(normalize_camera_up, z_axis);
+    scalar = VEC4_SCALAR(x_axis);
+    VEC4_NORMALIZE(x_axis, scalar);
+
+    vec3 y_axis = vec3_cross(z_axis, x_axis);
+
+    camera.mat[0][0] = x_axis.vec[0];
+    camera.mat[1][0] = x_axis.vec[1];
+    camera.mat[2][0] = x_axis.vec[2];
+
+    camera.mat[0][1] = y_axis.vec[0];
+    camera.mat[1][1] = y_axis.vec[1];
+    camera.mat[2][1] = y_axis.vec[2];
+
+    camera.mat[0][2] = z_axis.vec[0];
+    camera.mat[1][2] = z_axis.vec[1];
+    camera.mat[2][2] = z_axis.vec[2];
+
+    mat4_translate(&pos, (vec3){     -camera_pos.vec[0],
+                                             -camera_pos.vec[1],
+                                             -camera_pos.vec[2], VEC_INIT});
+    mat4 final = mat4_mult(camera, pos);
+
+    return final;
+}
+
+vec3 vec3_cross(vec3 vec_1, vec3 vec_2){
+    vec3 final = vec3_init();
+
+    final.vec[0] = (vec_1.vec[1] * vec_2.vec[2]) - (vec_1.vec[2] * vec_2.vec[1]);
+    final.vec[1] = (vec_1.vec[2] * vec_2.vec[0]) - (vec_1.vec[0] * vec_2.vec[2]);
+    final.vec[2] = (vec_1.vec[0] * vec_2.vec[1]) - (vec_1.vec[1] * vec_2.vec[0]);
+
+    return final;
 }
 
 vec3 vec3_init(void){

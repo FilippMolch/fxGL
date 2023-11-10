@@ -4,6 +4,10 @@
 #include <screen.h>
 
 void screen_init(screen *scr){
+
+    for (int buf = 0; buf < 304/8; ++buf)
+        ((uint64_t*)scr->keys)[buf] = 0;
+
     for (int buf = 0; buf < (W*H)/8; ++buf)
         ((uint64_t*)scr->color_buffer)[buf] = 0;
 

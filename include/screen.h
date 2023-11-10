@@ -14,7 +14,11 @@
 #include <Windows.h>
 #endif
 
-#define W 180
+//243
+//63
+//FULL SCREEN
+
+#define W 182
 #define H 52
 
 #define Z_BUFFER_CLEAR_VALUE 1000.0f
@@ -26,8 +30,8 @@ static uint8_t colors[5] = {' ', 176, 177, 178, 219};
 struct screen{
     uint8_t color_buffer[W*H];
     float z_buffer[W*H];
+    int keys[304];
     HANDLE console;
-
     uint8_t init;
 };
 

@@ -9,29 +9,29 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+#include <stdarg.h>
 
 #define VEC_INIT 223
 #define MAT_INIT 223
 
-#define ROTATE_AXIS_X 0
-#define ROTATE_AXIS_Y 1
-#define ROTATE_AXIS_Z 2
-#define NOT_ROTATE 3
-
-#define ANGLE_TO_RADIANS(angle) angle * (M_PI / 180.0f)
+#define ANGLE_TO_RADIANS(angle) angle * 0.01745329251994329576923690768489
 
 #define FABS(a) fabs(a)
 #define COSF(x) cosf(x)
 #define SINF(x) sinf(x)
 #define SQRT(x) sqrt(x)
 #define POW(x, y) pow(x, y)
+#define TAN(x) tanf(x)
 
 #define VEC4_SCALAR(vec3) SQRT(POW(vec3.vec[0], 2) + POW(vec3.vec[1], 2) + POW(vec3.vec[2], 2))
 
-#define VEC4_NORMALIZE(vec3, SCALAR) vec3.vec[0] = vec3.vec[0] / SCALAR; \
+#define VEC4_NORMALIZE(vec3, SCALAR)\
+                                     vec3.vec[0] = vec3.vec[0] / SCALAR; \
                                      vec3.vec[1] = vec3.vec[1] / SCALAR; \
                                      vec3.vec[2] = vec3.vec[2] / SCALAR;
 
+#define VEC3_MINUS(vec1, vec2, pos) vec1.vec[pos] - vec2.vec[pos]
+#define VEC3_PLUS(vec1, vec2, pos) vec1.vec[pos] + vec2.vec[pos]
 
 struct mat4 {
     float mat[4][4];
@@ -57,9 +57,13 @@ mat4 mat4_mult(mat4 mat_1, mat4 mat_2);
 void mat4_scale(mat4 *mat, vec3 vec);
 void mat4_translate(mat4 *mat, vec3 vec);
 void mat4_rotate(mat4 *mat, float angle, vec3 vec);
+mat4 mat4_mult_some(int count, ...);
+
 mat4 mat4_perspective(float fov, float aspect, float near_plane, float far_plane);
+mat4 look_at(vec3 camera_pos, vec3 camera_target, vec3 camera_up);
 
 vec4 mat4_vec4_mult(mat4 mat, vec4 vec);
+vec3 vec3_cross(vec3 vec_1, vec3 vec_2);
 vec3 vec3_init(void);
 vec4 vec4_init(void);
 
