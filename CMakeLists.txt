@@ -6,7 +6,6 @@ set(CMAKE_C_STANDARD 11)
 add_executable(soft_3d
         src/main.c
         src/lin_math.c
-        src/render.c
-        src/screen.c)
+        src/engine.c)
 
 target_include_directories(soft_3d PUBLIC "include/")

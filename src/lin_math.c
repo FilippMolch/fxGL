@@ -151,8 +151,8 @@ mat4 mat4_perspective(float fov, float aspect, float near_plane, float far_plane
     final.mat[0][0] = 1 / (aspect * tan_half_fov);
     final.mat[1][1] = 1 / (tan_half_fov);
     final.mat[2][2] = far_plane / (far_plane - near_plane);
-    final.mat[2][3] = 1;
-    final.mat[3][2] = -(far_plane * near_plane) / (far_plane - near_plane);
+    final.mat[3][2] = 1;
+    final.mat[2][3] = -(far_plane * near_plane) / (far_plane - near_plane);
 
     return final;
 }
@@ -180,15 +180,13 @@ mat4 look_at(vec3 camera_pos, vec3 camera_target, vec3 camera_up){
     vec3 y_axis = vec3_cross(z_axis, x_axis);
 
     camera.mat[0][0] = x_axis.vec[0];
-    camera.mat[1][0] = x_axis.vec[1];
-    camera.mat[2][0] = x_axis.vec[2];
-
-    camera.mat[0][1] = y_axis.vec[0];
+    camera.mat[0][1] = x_axis.vec[1];
+    camera.mat[0][2] = x_axis.vec[2];
+    camera.mat[1][0] = y_axis.vec[0];
     camera.mat[1][1] = y_axis.vec[1];
-    camera.mat[2][1] = y_axis.vec[2];
-
-    camera.mat[0][2] = z_axis.vec[0];
-    camera.mat[1][2] = z_axis.vec[1];
+    camera.mat[1][2] = y_axis.vec[2];
+    camera.mat[2][0] = z_axis.vec[0];
+    camera.mat[2][1] = z_axis.vec[1];
     camera.mat[2][2] = z_axis.vec[2];
 
     mat4_translate(&pos, (vec3){     -camera_pos.vec[0],
@@ -215,4 +213,12 @@ vec3 vec3_init(void){
 
 vec4 vec4_init(void){
     return (vec4){0.0f, 0.0f, 0.0f, 1.0f, VEC_INIT};
+}
+
+vec3 vec3_get(float x, float y, float z){
+    return (vec3){x, y, z, VEC_INIT};
+}
+
+vec4 vec4_get(float x, float y, float z, float w){
+    return (vec4){x, y, z, w, VEC_INIT};
 }

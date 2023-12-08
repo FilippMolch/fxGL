@@ -24,6 +24,7 @@
 #define TAN(x) tanf(x)
 
 #define VEC4_SCALAR(vec3) SQRT(POW(vec3.vec[0], 2) + POW(vec3.vec[1], 2) + POW(vec3.vec[2], 2))
+//#define VEC4_SCALAR(vec3) SQRT(vec3.vec[0] + vec3.vec[1] + vec3.vec[2])
 
 #define VEC4_NORMALIZE(vec3, SCALAR)\
                                      vec3.vec[0] = vec3.vec[0] / SCALAR; \
@@ -64,7 +65,10 @@ mat4 look_at(vec3 camera_pos, vec3 camera_target, vec3 camera_up);
 
 vec4 mat4_vec4_mult(mat4 mat, vec4 vec);
 vec3 vec3_cross(vec3 vec_1, vec3 vec_2);
+
 vec3 vec3_init(void);
 vec4 vec4_init(void);
+vec3 vec3_get(float x, float y, float z);
+vec4 vec4_get(float x, float y, float z, float w);
 
 #endif //SOFT_3D_LIN_MATH_H
