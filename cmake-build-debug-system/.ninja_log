@@ -1,0 +1,16 @@
+# ninja log v5
+8	256	7251260610976806	CMakeFiles/soft_3d.dir/src/lin_math.c.obj	de97e378990739a5
+32	1986	7250463491001562	CMakeFiles/soft_3d.dir/src/engine.c.obj	f8393e9da9add8eb
+2	1143	7253548440114968	CMakeFiles/soft_3d.dir/src/main.c.obj	8f002c0effd8b31a
+1144	1253	7253548441185093	soft_3d.exe	626a23a3ff74113e
+0	799	7253525544794410	build.ninja	51521e05bd1efb62
+6	1946	7250464483382037	CMakeFiles/soft_3d.dir/src/fxGL.c.obj	c8b7972ce023fbab
+3	126	7253535783414222	CMakeFiles/soft_3d.dir/src/fxGL/fxGL.c.obj	3ceb0a017620e6b5
+3	114	7253543574817800	CMakeFiles/soft_3d.dir/src/fxGL/fxRasterize.c.obj	6fe583fd8497b004
+3	1312	7253495049075608	CMakeFiles/soft_3d.dir/src/fxGL/fxMath.c.obj	b26d54c3f1df51b4
+3	1195	7253548595384171	CMakeFiles/soft_3d.dir/src/main.c.obj	8f002c0effd8b31a
+1196	1304	7253548596445711	soft_3d.exe	626a23a3ff74113e
+2	1149	7253548784514253	CMakeFiles/soft_3d.dir/src/main.c.obj	8f002c0effd8b31a
+1150	1257	7253548785564250	soft_3d.exe	626a23a3ff74113e
+3	1143	7253548998627142	CMakeFiles/soft_3d.dir/src/main.c.obj	8f002c0effd8b31a
+1143	1271	7253548999881090	soft_3d.exe	626a23a3ff74113e

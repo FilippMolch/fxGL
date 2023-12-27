@@ -2,8 +2,8 @@
 // Created by Filipp on 07.11.2023.
 //
 
-#ifndef SOFT_3D_LIN_MATH_H
-#define SOFT_3D_LIN_MATH_H
+#ifndef SOFT_3D_FXMATH_H
+#define SOFT_3D_FXMATH_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,7 @@
 
 #define ANGLE_TO_RADIANS(angle) angle * 0.01745329251994329576923690768489
 
-#define FABS(a) fabs(a)
+#define FABS(a) fabsf(a)
 #define COSF(x) cosf(x)
 #define SINF(x) sinf(x)
 #define SQRT(x) sqrt(x)
@@ -33,6 +33,9 @@
 
 #define VEC3_MINUS(vec1, vec2, pos) vec1.vec[pos] - vec2.vec[pos]
 #define VEC3_PLUS(vec1, vec2, pos) vec1.vec[pos] + vec2.vec[pos]
+
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
 struct mat4 {
     float mat[4][4];
@@ -66,9 +69,11 @@ mat4 look_at(vec3 camera_pos, vec3 camera_target, vec3 camera_up);
 vec4 mat4_vec4_mult(mat4 mat, vec4 vec);
 vec3 vec3_cross(vec3 vec_1, vec3 vec_2);
 
-vec3 vec3_init(void);
-vec4 vec4_init(void);
-vec3 vec3_get(float x, float y, float z);
-vec4 vec4_get(float x, float y, float z, float w);
+vec3 inline vec3_init(void);
+vec4 inline vec4_init(void);
+vec3 inline vec3_get(float x, float y, float z);
+vec4 inline vec4_get(float x, float y, float z, float w);
 
-#endif //SOFT_3D_LIN_MATH_H
+vec3 baryCoord(float spc[3][2], float P[2]);
+
+#endif //SOFT_3D_FXMATH_H

@@ -1,3 +1,5 @@
 cmake-build-debug/
 cmake-build-release/
+cmake-build-debug-system/
+cmake-build-release-system/
 .idea/

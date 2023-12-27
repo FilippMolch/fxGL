@@ -1,7 +1,7 @@
 //
 // Created by Filipp on 07.11.2023.
 //
-#include <lin_math.h>
+#include "fxGL/fxMath.h"
 
 mat4 mat4_init(uint8_t mode){
     mat4 mat;
@@ -89,28 +89,21 @@ vec4 mat4_vec4_mult(mat4 mat, vec4 vec){
 }
 
 void mat4_scale(mat4 *mat, vec3 vec){
-
     if (mat->init + vec.init == MAT_INIT + VEC_INIT){
-
         mat->mat[0][0] = vec.vec[0];
         mat->mat[1][1] = vec.vec[1];
         mat->mat[2][2] = vec.vec[2];
-
     }
     else{
         printf("MAT OR VEC NOT INIT \n");
     }
-
 }
 
 void mat4_translate(mat4 *mat, vec3 vec){
-
     if (mat->init + vec.init == MAT_INIT + VEC_INIT) {
-
         mat->mat[0][3] = vec.vec[0];
         mat->mat[1][3] = vec.vec[1];
         mat->mat[2][3] = vec.vec[2];
-
     }
     else{
         printf("MAT OR VEC NOT INIT \n");
@@ -205,6 +198,21 @@ vec3 vec3_cross(vec3 vec_1, vec3 vec_2){
     final.vec[2] = (vec_1.vec[0] * vec_2.vec[1]) - (vec_1.vec[1] * vec_2.vec[0]);
 
     return final;
+}
+
+vec3 baryCoord(float spc[3][2], float P[2]){
+
+    vec3 vec_1 = vec3_get(spc[2][0] - spc[0][0], spc[1][0] - spc[0][0], spc[0][0] - P[0]);
+    vec3 vec_2 = vec3_get(spc[2][1] - spc[0][1], spc[1][1] - spc[0][1], spc[0][1] - P[1]);
+    vec3 u = vec3_cross(vec_1, vec_2);
+
+    if (FABS(u.vec[2]) < 1.0f){
+        return vec3_get(-1.0f, 1.0f, 1.0f);
+    }
+
+    return vec3_get(1.0f - (u.vec[0] + u.vec[1]) / u.vec[2],
+                    u.vec[1] / u.vec[2],
+                    u.vec[0] / u.vec[2]);
 }
 
 vec3 vec3_init(void){
