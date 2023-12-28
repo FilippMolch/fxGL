@@ -17,6 +17,13 @@ int shaders_count = 0;
 int shader_use = 0;
 shader* shaders = NULL;
 
+void fxClearColor(){
+    if (screen_bind){
+        screen* scr = &screens[screen_bind - 1];
+        memset(scr->color_buffer, ' ', (size_t)scr->W * scr->H * sizeof(char));
+    }
+}
+
 int fxGenShaderProgram(){
     shaders = (shader*)fxDynamicAllocator(&shaders_count, shaders, sizeof(shader));
     if(!shaders){
@@ -45,6 +52,44 @@ void fxAttachShaders(void (*vertex)(), void (*fragment)(), int program){
     shd->fragment = fragment;
 }
 
+int fxVertexAttribPointer(uint32_t count, size_t data_size, uint16_t data_type, uint16_t begin){
+    renderer* ren = &renderers[renderer_bind - 1];
+    ren->attribs = fxDynamicAllocator(&ren->shader_attribs_count, ren->attribs, sizeof(attrib_pointer));
+    if(!ren->attribs){
+        printf("fxGL VertexAttribPointer ERROR: Dynamic buffer allocation error \n");
+        return FX_ERROR_GEN_ATTRIB_POINTER;
+    }
+
+    ren->attribs[ren->shader_attribs_count - 1].count = count;
+    ren->attribs[ren->shader_attribs_count - 1].data_size = data_size;
+    ren->attribs[ren->shader_attribs_count - 1].data_type = data_type;
+    ren->attribs[ren->shader_attribs_count - 1].begin = begin;
+
+    free(ren->attrs);
+    ren->attrs = (float**)malloc(ren->shader_attribs_count * sizeof(float*));
+
+    for (int i = 0; i < ren->shader_attribs_count; ++i) {
+        attrib_pointer* current_attrib = &ren->attribs[i];
+
+        size_t data_t = 0;
+
+        switch (current_attrib->data_type) {
+            case FX_FLOAT: {
+                data_t = sizeof(float);
+                break;
+            }
+            default: {
+                printf("fxGL VertexAttribPointer ERROR: DATA_TYPE");
+                return 0;
+            }
+        }
+
+        ren->attrs[i] = (float*)malloc(data_t * current_attrib->count);
+    }
+
+    return 1;
+}
+
 void fx_Position(vec4 pos){
     shader* shd = &shaders[shader_use - 1];
 
@@ -53,9 +98,11 @@ void fx_Position(vec4 pos){
 
 float* fx_AttrLocations(int loc){
     if (shader_use){
-        shader* shd = &shaders[shader_use - 1];
-        return shd->attrs;
+        renderer* ren = &renderers[renderer_bind - 1];
+        return ren->attrs[loc];
     }
+
+    return NULL;
 }
 
 void* fxDynamicAllocator(int* bufCount, void* bufArray, size_t byteSize){
@@ -97,7 +144,7 @@ int fxGenScreen(int width, int height){
     memset(scr->color_buffer, ' ', (size_t)width * height * sizeof(char));
 
     for (int i = 0; i < width * height; ++i) {
-        scr->z_buffer[i] = 1.0f;
+        scr->z_buffer[i] = -1.0f;
     }
 
     scr->screen_output_func = NULL;
@@ -117,8 +164,13 @@ int fxGenRenBuffer(){
     renderer* ren = &renderers[renderers_count - 1];
 
     ren->buffer = NULL;
-    ren->data_count = 0;
-    ren->data_length = 0;
+    ren->data_size = 0;
+
+    ren->attrs = NULL;
+    ren->attribs = NULL;
+    ren->shader_attribs_count = 0;
+    ren->vert_buf = NULL;
+
     ren->init = 1;
 
     return renderers_count;
@@ -160,7 +212,16 @@ int fxFreeRenderer(int desc){
         return 0;
 
     renderer* ren = &renderers[desc - 1];
+
+    for (int i = 0; i < ren->shader_attribs_count; ++i) {
+        free(ren->attrs[i]);
+    }
+
+    free(ren->attrs);
+
     free(ren->buffer);
+    free(ren->vert_buf);
+    free(ren->attribs);
 
     return 1;
 }
@@ -179,18 +240,19 @@ int fxFreeScreen(int desc){
     return 1;
 }
 
-int fxRenBufferData(int data_count, int data_length, float* data_ptr){
+int fxRenBufferData(int data_size, float* data_ptr){
     if (renderers == NULL && renderer_bind == 0)
         return 0;
 
-    size_t size = (data_count * data_length) * sizeof(float);
+    size_t size = (data_size) * sizeof(float);
 
     renderer* ren = &renderers[renderer_bind - 1];
 
     ren->buffer = (float*)malloc(size);
+    ren->vert_buf = (float*)calloc(data_size, sizeof(float));
+
     PTR_CHECK(ren->buffer)
-    ren->data_count = data_count;
-    ren->data_length = data_length;
+    ren->data_size = data_size;
 
     memcpy(ren->buffer, data_ptr, size);
 

@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-void draw_line(fragment* rast_arr, vec3 src, vec3 dst){
+void draw_line(vec3 src, vec3 dst){
 
     screen* scree = &screens[screen_bind - 1];
 
@@ -48,19 +48,32 @@ int fxDrawArray(int prim_type, int prim_count){
 
     renderer* ren = &renderers[renderer_bind - 1];
     screen* scr = &screens[screen_bind - 1];
-    memset(scr->color_buffer, ' ', (size_t)scr->W * scr->H * sizeof(char));
-
     shader* shd = NULL;
+
     if (shader_use)
         shd = &shaders[shader_use - 1];
 
-    size_t frag_count = scr->W * scr->H;
+    float* vert_buf = ren->vert_buf;
+    int vertex = 0;
 
-    fragment* rasterize_arr = (fragment*)malloc(frag_count * sizeof(fragment));
-    PTR_CHECK(rasterize_arr)
+    for (size_t ver = 0; ver < ren->data_size; ver += ren->attribs[0].data_size) {
 
-    for (int i = 0; i < frag_count; ++i)
-        rasterize_arr[i] = (fragment){0.0f, 0};
+        for (int cur_attrib = 0; cur_attrib < ren->shader_attribs_count; ++cur_attrib) {
+            attrib_pointer* c_a = &ren->attribs[cur_attrib];
+            for (int attr_line = 0; attr_line < c_a->data_size; ++attr_line) {
+                float* b = ren->buffer;
+                ren->attrs[cur_attrib][attr_line] = b[ver + attr_line + c_a->begin];
+            }
+        }
+
+        shd->vertex();
+
+        vert_buf[vertex + 0] = shd->position.vec[0];
+        vert_buf[vertex + 1] = shd->position.vec[1];
+        vert_buf[vertex + 2] = shd->position.vec[2];
+        vertex += 3;
+
+    }
 
     switch (prim_type) {
         case FX_POINT: {
@@ -79,7 +92,7 @@ int fxDrawArray(int prim_type, int prim_count){
             vec3 src = vec3_get(ren->buffer[0], ren->buffer[1], ren->buffer[2]);
             vec3 dst = vec3_get(ren->buffer[3], ren->buffer[4], ren->buffer[5]);
 
-            draw_line(rasterize_arr, src, dst);
+            //draw_line(rasterize_arr, src, dst);
             break;
         }
 
@@ -88,27 +101,21 @@ int fxDrawArray(int prim_type, int prim_count){
             float tri[3][2] = {0};
             float P[2] = {0};
 
-            float* vert_buf = (float*)calloc(ren->data_count * ren->data_length, sizeof(float));
-
-            for (int i = 0; i < prim_count * 9; i += 3) {
-                if (shader_use){
-                    shd->attrs[0] = ren->buffer[i];
-                    shd->attrs[1] = ren->buffer[i+1];
-                    shd->attrs[2] = ren->buffer[i+2];
-
-                    shd->vertex();
-
-                    vert_buf[i] = shd->position.vec[0];
-                    vert_buf[i+1] = shd->position.vec[1];
-                    vert_buf[i+2] = shd->position.vec[2];
-                }else{
-                    vert_buf[i] = ren->buffer[i];
-                    vert_buf[i+1] = ren->buffer[i+1];
-                    vert_buf[i+2] = ren->buffer[i+2];
-                }
-            }
-
             for (int i = 0; i < prim_count * 9; i += 9) {
+
+                if (!shader_use){
+                    vert_buf[i + 0] = ren->buffer[i + 0];
+                    vert_buf[i + 1] = ren->buffer[i + 1];
+                    vert_buf[i + 2] = ren->buffer[i + 2];
+
+                    vert_buf[i + 3] = ren->buffer[i + 3];
+                    vert_buf[i + 4] = ren->buffer[i + 4];
+                    vert_buf[i + 5] = ren->buffer[i + 5];
+
+                    vert_buf[i + 6] = ren->buffer[i + 6];
+                    vert_buf[i + 7] = ren->buffer[i + 7];
+                    vert_buf[i + 8] = ren->buffer[i + 8];
+                }
 
                 tri[0][0] = TRANSLATE_COORD_X(vert_buf[i+0], scr->W);
                 tri[0][1] = TRANSLATE_COORD_Y(vert_buf[i+1], scr->H);
@@ -124,8 +131,6 @@ int fxDrawArray(int prim_type, int prim_count){
 
                 top_p = min(min(tri[0][1], tri[1][1]), tri[2][1]);
                 bottom_p = max(max(tri[0][1], tri[1][1]), tri[2][1]);
-
-                int current_color = rand() % 3;
 
                 for (int x = left_p; x < right_p; ++x) {
                     for (int y = top_p; y < bottom_p; ++y) {
@@ -149,5 +154,4 @@ int fxDrawArray(int prim_type, int prim_count){
     }
 
     scr->screen_output_func(scr->color_buffer, scr->W, scr->H);
-    free(rasterize_arr);
 }

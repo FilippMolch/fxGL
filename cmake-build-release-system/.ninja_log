@@ -1,6 +1,0 @@
-# ninja log v5
-3	159	7253306075754030	CMakeFiles/soft_3d.dir/src/fxGL/fxGL.c.obj	d38db082de1b568c
-8	671	7253297223047961	CMakeFiles/soft_3d.dir/src/fxGL/fxRasterize.c.obj	50483c73cdcf816f
-31	965	7251476572337267	CMakeFiles/soft_3d.dir/src/fxGL/fxMath.c.obj	87928de459b9990c
-3	1899	7253306678836236	CMakeFiles/soft_3d.dir/src/main.c.obj	5204a8863a9fb9bb
-1900	2025	7253306680040033	soft_3d.exe	ead8393c4a0ef7d3

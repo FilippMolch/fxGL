@@ -18,17 +18,15 @@ void _out(char* color_buffer, int w, int h){
 
 float angle = 0.0f;
 
+mat4 rotate;
+mat4 scl;
+
 void vert(void){
     float* loc = fx_AttrLocations(0);
 
     vec4 pos = vec4_get(loc[0], loc[1], loc[2], 1.0f);
 
-    mat4 rotate = mat4_init(1);
-    mat4_rotate(&rotate, angle, vec3_get(1.0f, 0.5f, 0.0f));
     pos = mat4_vec4_mult(rotate, pos);
-
-    mat4 scl = mat4_init(1);
-    mat4_scale(&scl, vec3_get(0.8f, 0.8f, 0.8f));
     pos = mat4_vec4_mult(scl, pos);
 
     fx_Position(pos);
@@ -84,7 +82,13 @@ int main(){
         trng[(i * 3) + 2] = attrib.vertices[(3) * attrib.faces[i].v_idx + 2];
     }
 
-    int scr_1 = fxGenScreen(190, 60);
+    float trng2[] = {
+            0.0f, 0.3f, 0.0f, 1.0f, 0.5f,
+            -0.5f, 0.7f, 0.0f, 0.5f, 0.5f,
+            0.5f, 0.7f, 0.0f, 0.5f, 1.0f
+    };
+
+    int scr_1 = fxGenScreen(140, 50);
     int ren_1 = fxGenRenBuffer();
     int prog = fxGenShaderProgram();
     fxAttachShaders(vert, frag, prog);
@@ -93,24 +97,29 @@ int main(){
     fxSetDrawOutput(_out);
 
     fxBindRenBuffer(ren_1);
-    fxRenBufferData(trng_count * 3, 3, trng);
+    fxRenBufferData(trng_count * 3 * 3, trng);
+    //fxRenBufferData(3 * 5, trng2);
+    fxVertexAttribPointer(3, 3, FX_FLOAT, 0);
+    fxBindRenBuffer(0);
 
-    time_t t0 = clock();
     while (true){
+        rotate = mat4_init(1);
+        mat4_rotate(&rotate, angle, vec3_get(1.0f, 0.5f, 0.0f));
+        scl = mat4_init(1);
+        mat4_scale(&scl, vec3_get(0.8f, 0.8f, 0.8f));
+
+        fxClearColor();
         angle += 0.1f;
         if (angle >= 360.0f) angle = 0.0f;
 
         fxUseProgram(prog);
-        fxDrawArray(FX_TRIANGLES, trng_count);
+        fxBindRenBuffer(ren_1);
+            fxDrawArray(FX_TRIANGLES, trng_count);
+        fxBindRenBuffer(0);
     }
-    time_t t1 = clock();
-    double time_in_seconds = t1 - t0;
 
-    fxBindRenBuffer(0);
     fxBindScreen(0);
 
-    printf("triangles count: %d\n", trng_count);
-    printf("draw time (in seconds): %f\n", time_in_seconds/1000);
     test_func();
 
     system("pause");

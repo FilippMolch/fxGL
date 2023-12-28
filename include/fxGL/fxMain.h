@@ -11,7 +11,7 @@
 
 #define PTR_CHECK(d) if (d == NULL) return 0;
 
-struct screen_struct {
+typedef struct {
     int W, H;
 
     char* color_buffer;
@@ -20,36 +20,36 @@ struct screen_struct {
     void (*screen_output_func)();
 
     bool init;
-};
+} screen;
 
-struct renderer_struct {
+typedef struct {
+    uint32_t count;
+
+    size_t data_size;
+    uint16_t data_type;
+
+    uint16_t begin;
+}  attrib_pointer;
+
+typedef struct {
     float* buffer;
+    float* vert_buf;
 
-    int data_count;
-    int data_length;
+    int data_size;
+
+    attrib_pointer* attribs;
+    float** attrs;
+    int shader_attribs_count;
 
     bool init;
-};
+} renderer;
 
-struct fragment_struct {
-    float z_coord;
-
-    bool draw_fragment;
-};
-
-struct shader_program_struct {
+typedef struct {
     void (*vertex)();
     void (*fragment)();
 
     vec4 position;
-
-    float attrs[3];
-};
-
-typedef struct screen_struct screen;
-typedef struct renderer_struct renderer;
-typedef struct fragment_struct fragment;
-typedef struct shader_program_struct shader;
+} shader;
 
 extern int screens_count;
 extern int screen_bind;

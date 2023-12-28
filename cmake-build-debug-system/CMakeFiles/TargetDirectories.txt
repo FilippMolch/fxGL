@@ -1,3 +1,0 @@
-F:/project/soft_3d/cmake-build-debug-system/CMakeFiles/soft_3d.dir
-F:/project/soft_3d/cmake-build-debug-system/CMakeFiles/edit_cache.dir
-F:/project/soft_3d/cmake-build-debug-system/CMakeFiles/rebuild_cache.dir
